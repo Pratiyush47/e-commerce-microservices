@@ -1,7 +1,9 @@
 package com.ecommerce.order.service;
 
 import com.ecommerce.order.dto.CreateOrderRequest;
+import com.ecommerce.order.dto.CreatePaymentRequest;
 import com.ecommerce.order.dto.OrderDTO;
+import com.ecommerce.order.dto.PaymentDTO;
 import com.ecommerce.order.dto.ProductDTO;
 import com.ecommerce.order.dto.UpdateOrderRequest;
 import com.ecommerce.order.entity.Order;
@@ -21,10 +23,11 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final RestTemplate restTemplate;
+    private final PaymentClientService paymentClientService;
 
     public OrderDTO createOrder(CreateOrderRequest request) {
 
-        // Fetch actual product price from Product Service
+        // Fetch product price from Product Service
         BigDecimal productPrice = getProductPrice(request.getProductId());
 
         Order order = new Order();
@@ -36,10 +39,40 @@ public class OrderService {
         order.setStatus("PENDING");
         order.setShippingAddress(request.getShippingAddress());
 
-        // createdAt and updatedAt are handled automatically
-        // by @PrePersist in Order entity
-
+        // Save order first
         Order savedOrder = orderRepository.save(order);
+
+        // Create payment request
+        CreatePaymentRequest paymentRequest = new CreatePaymentRequest(
+                savedOrder.getId(),
+                savedOrder.getUserId(),
+                savedOrder.getTotalPrice(),
+                "UPI"
+        );
+
+        try {
+
+            // Call Payment Service
+            PaymentDTO payment = paymentClientService.processPayment(paymentRequest);
+
+            // Update order status based on payment
+            if (payment != null && "SUCCESS".equalsIgnoreCase(payment.getStatus())) {
+
+                savedOrder.setStatus("PAID");
+
+            } else {
+
+                savedOrder.setStatus("FAILED");
+            }
+
+        } catch (Exception e) {
+
+            // Payment Service unavailable
+            savedOrder.setStatus("FAILED");
+        }
+
+        // Save updated status
+        savedOrder = orderRepository.save(savedOrder);
 
         return convertToDTO(savedOrder);
     }
@@ -89,9 +122,6 @@ public class OrderService {
             order.setShippingAddress(request.getShippingAddress());
         }
 
-        // updatedAt is handled automatically
-        // by @PreUpdate in Order entity
-
         Order updatedOrder = orderRepository.save(order);
 
         return convertToDTO(updatedOrder);
@@ -120,9 +150,11 @@ public class OrderService {
             return product.getPrice();
 
         } catch (Exception e) {
+
             e.printStackTrace();
+
             throw new RuntimeException(
-                "Unable to fetch product details from Product Service", e);
+                    "Unable to fetch product details from Product Service", e);
         }
     }
 
