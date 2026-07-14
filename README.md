@@ -9,11 +9,11 @@ This project implements a scalable, distributed e-commerce system with 4 indepen
 ### Architecture Components
 
 **Services:**
-- API Gateway (Port 8000) - Central entry point
+- API Gateway (Port 8080) - Central entry point
 - User Service (Port 8001) - Authentication & user management
 - Product Service (Port 8002) - Product catalog & inventory
 - Order Service (Port 8003) - Order processing
-- Payment Service (Port 8004) - Payment processing
+- Payment Service (Port 8005) - Payment processing
 - H2 In-Memory Database (Per Service)
 - Prometheus (Port 9090) - Metrics Collection
 - Grafana (Port 3000) - Dashboard & Visualization
@@ -147,11 +147,11 @@ Once all services are running, you can access them at:
 
 | Service | URL | Port |
 |---------|-----|------|
-| API Gateway | http://localhost:8000 | 8000 |
+| API Gateway | http://localhost:8080 | 8080 |
 | User Service | http://localhost:8001 | 8001 |
 | Product Service | http://localhost:8002 | 8002 |
 | Order Service | http://localhost:8003 | 8003 |
-| Payment Service | http://localhost:8004 | 8004 |
+| Payment Service | http://localhost:8005 | 8005 |
 | Prometheus | http://localhost:9090 | 9090 |
 | Grafana | http://localhost:3000 | 3000 |
 
@@ -348,9 +348,9 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## 👨‍💻 Author
 
-**Pratiyush Sharma**
+**Pratiyush Singh**
 - GitHub: [@Pratiyush47](https://github.com/Pratiyush47)
-- Email: your-email@example.com
+- Email: pratiyush379@gmail.com
 
 ## 🙏 Acknowledgments
 
