@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: payment-service
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+
+  h2:
+    console:
+      enabled: false
+
+server:
+  port: 8005
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,metrics,prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+
+  swagger-ui:
+    path: /swagger-ui.html
