@@ -2,6 +2,7 @@ package com.ecommerce.order.service;
 
 import com.ecommerce.order.dto.CreateOrderRequest;
 import com.ecommerce.order.dto.OrderDTO;
+import com.ecommerce.order.dto.ProductDTO;
 import com.ecommerce.order.dto.UpdateOrderRequest;
 import com.ecommerce.order.entity.Order;
 import com.ecommerce.order.exception.OrderNotFoundException;
@@ -23,7 +24,7 @@ public class OrderService {
 
     public OrderDTO createOrder(CreateOrderRequest request) {
 
-        // Fetch product price from Product Service
+        // Fetch actual product price from Product Service
         BigDecimal productPrice = getProductPrice(request.getProductId());
 
         Order order = new Order();
@@ -107,17 +108,21 @@ public class OrderService {
     private BigDecimal getProductPrice(Long productId) {
 
         try {
-            String url = "http://product-service:8002/api/products/" + productId;
 
-            // Placeholder until service-to-service communication is implemented
-            restTemplate.getForObject(url, Object.class);
+            String url = "http://localhost:8002/api/products/" + productId;
 
-            return BigDecimal.valueOf(100.0);
+            ProductDTO product = restTemplate.getForObject(url, ProductDTO.class);
+
+            if (product == null) {
+                throw new RuntimeException("Product not found");
+            }
+
+            return product.getPrice();
 
         } catch (Exception e) {
-
-            // Temporary fallback value
-            return BigDecimal.valueOf(100.0);
+            e.printStackTrace();
+            throw new RuntimeException(
+                "Unable to fetch product details from Product Service", e);
         }
     }
 
