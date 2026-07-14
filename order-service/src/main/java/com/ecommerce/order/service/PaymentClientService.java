@@ -3,6 +3,7 @@ package com.ecommerce.order.service;
 import com.ecommerce.order.dto.CreatePaymentRequest;
 import com.ecommerce.order.dto.PaymentDTO;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -12,9 +13,12 @@ public class PaymentClientService {
 
     private final RestTemplate restTemplate;
 
+    @Value("${app.services.payment-url}")
+    private String paymentServiceUrl;
+
     public PaymentDTO processPayment(CreatePaymentRequest request) {
 
-        String url = "http://localhost:8005/api/payments";
+        String url = paymentServiceUrl + "/api/payments";
 
         return restTemplate.postForObject(
                 url,

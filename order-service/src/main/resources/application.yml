@@ -24,6 +24,10 @@ app:
   jwt:
     secret: mySecretKeyThatIsAtLeast256BitsLongForHS256Algorithm
 
+  services:
+    product-url: http://localhost:8002
+    payment-url: http://localhost:8005
+
 management:
   endpoints:
     web:
